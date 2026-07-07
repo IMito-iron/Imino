@@ -4,6 +4,7 @@ dist/
 release/
 offline-cache/
 .offline-cache-runtime/
+downloads/
 
 backend/.venv/
 backend/__pycache__/

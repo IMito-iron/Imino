@@ -4,8 +4,10 @@
 
 ## 安装依赖
 
+当前后端已按 CPython 3.14.4 x64 验证。Windows 上建议显式使用 Python Launcher 创建虚拟环境：
+
 ```bash
-python -m venv .venv
+py -3.14 -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt -r requirements-build.txt
 ```

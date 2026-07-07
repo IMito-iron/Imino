@@ -32,7 +32,7 @@ if errorlevel 1 goto :error
 echo.
 echo [3/5] Creating Python virtual environment...
 if not exist "backend\.venv\Scripts\python.exe" (
-  python -m venv backend\.venv
+  py -3.14 -m venv backend\.venv
   if errorlevel 1 goto :error
 )
 

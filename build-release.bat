@@ -15,7 +15,7 @@ if not exist "node_modules" (
 echo.
 echo [2/5] Checking Python virtual environment...
 if not exist "backend\.venv\Scripts\python.exe" (
-  python -m venv backend\.venv
+  py -3.14 -m venv backend\.venv
   if errorlevel 1 goto :error
 ) else (
   echo backend\.venv already exists.

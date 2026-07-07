@@ -14,7 +14,7 @@
 
 ## 当前依赖版本
 
-Node 侧当前 lockfile 实际锁定版本：
+Node 侧当前按 `package-lock.json` 实际锁定版本：
 
 | 依赖 | 当前锁定版本 | 说明 |
 | --- | --- | --- |
@@ -32,17 +32,17 @@ Python 侧当前直接依赖：
 | --- | --- | --- |
 | FastAPI | 0.115.6 | `backend/requirements.txt` |
 | Uvicorn | 0.34.0 | `backend/requirements.txt` |
-| PyInstaller | 6.11.1 | `backend/requirements-build.txt` |
+| PyInstaller | 6.21.0 | `backend/requirements-build.txt` |
 
-当前 `offline-cache/python-wheels` 中包含 25 个 wheel。需要注意其中存在 `cp313-win_amd64` 二进制 wheel，例如：
+当前 `offline-cache/python-wheels` 中包含 25 个 wheel。需要注意其中存在 `cp314-win_amd64` 二进制 wheel，例如：
 
-- `httptools-0.8.0-cp313-cp313-win_amd64.whl`
-- `pydantic_core-2.46.4-cp313-cp313-win_amd64.whl`
-- `pyyaml-6.0.3-cp313-cp313-win_amd64.whl`
-- `watchfiles-1.2.0-cp313-cp313-win_amd64.whl`
-- `websockets-16.0-cp313-cp313-win_amd64.whl`
+- `httptools-0.8.0-cp314-cp314-win_amd64.whl`
+- `pydantic_core-2.46.4-cp314-cp314-win_amd64.whl`
+- `pyyaml-6.0.3-cp314-cp314-win_amd64.whl`
+- `watchfiles-1.2.0-cp314-cp314-win_amd64.whl`
+- `websockets-16.0-cp314-cp314-win_amd64.whl`
 
-因此当前 wheelhouse 是按 **Windows x64 + CPython 3.13** 准备的。
+因此当前 wheelhouse 是按 **Windows x64 + CPython 3.14** 准备的，并已在 Python 3.14.4 下验证。
 
 ## 最低版本要求
 
@@ -74,7 +74,7 @@ release/win-unpacked/Imino Local Toolbox.exe
 | Windows | Windows 10 x64 | Windows 11 x64 | Electron 31 与当前 Python wheels 均面向 Windows x64 |
 | Node.js | 18.0.0+ | 20.10.0 | Vite、electron-vite、Rollup 要求 Node 18+ |
 | npm | 9+ | 10.2.3 | 当前 `package-lock.json` 为 lockfileVersion 3，离线缓存由 npm 10 生成 |
-| Python | CPython 3.13 x64 | 3.13.5 | 当前 wheelhouse 内含 `cp313-win_amd64` wheel |
+| Python | CPython 3.14 x64 | 3.14.4 | 当前 wheelhouse 内含 `cp314-win_amd64` wheel |
 | PowerShell | Windows 自带即可 | Windows PowerShell 5.x | bat 中用于解压 zip |
 
 更稳妥的内网环境建议：
@@ -83,10 +83,12 @@ release/win-unpacked/Imino Local Toolbox.exe
 Windows 10/11 x64
 Node.js 20.10.0 或同一 LTS 大版本
 npm 10.2.3 或同一 npm 10 大版本
-CPython 3.13.x x64
+CPython 3.14.4 x64
 ```
 
-如果内网机器使用 Python 3.12、3.11 或 32 位 Python，当前 `python-wheels.zip` 不适用，需要在外网按目标 Python 版本重新生成 wheelhouse。
+Node.js 24.x 理论上可以尝试运行当前前端构建链，但本项目当前锁定依赖是在 Node.js 20.10.0 / npm 10.2.3 下验证的。若要把 Node.js 24 作为内网标准环境，建议先在外网同版本环境执行一次 `npm ci`、`npm run build`、`npm run dist` 并重新生成 npm 离线缓存。
+
+如果内网机器使用 Python 3.13、3.12、3.11 或 32 位 Python，当前 `python-wheels.zip` 不适用，需要在外网按目标 Python 版本重新生成 wheelhouse。
 
 ## 普通开发安装
 
@@ -94,14 +96,16 @@ CPython 3.13.x x64
 npm install
 ```
 
-Python 后端建议使用虚拟环境：
+Python 后端建议使用虚拟环境。当前项目按 Python 3.14.4 验证，Windows 上建议显式使用 Python Launcher：
 
 ```bash
 cd backend
-python -m venv .venv
+py -3.14 -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt -r requirements-build.txt
 ```
+
+如果当前终端中的 `python` 仍指向旧版本，可以继续使用 `py -3.14`。项目脚本已改为创建 venv 时显式调用 `py -3.14`。
 
 ## 开发启动
 
@@ -178,11 +182,11 @@ setup-offline.bat
 
 1. 解压 npm、Electron、electron-builder、Python wheelhouse 缓存到本地运行目录。
 2. 使用 `npm ci --offline` 从 npm 离线缓存安装 Node 依赖。
-3. 创建 `backend/.venv`。
+3. 使用 `py -3.14 -m venv backend/.venv` 创建 Python 虚拟环境。
 4. 使用 `pip --no-index --find-links` 从 `offline-cache/python-wheels` 安装 Python 依赖。
 5. 执行 `npm run dist` 生成安装包。
 
-如果依赖版本发生变化，需要在外网机器重新生成缓存包后再迁移到内网。
+如果依赖版本、Node 版本或 Python 版本发生变化，需要在外网机器重新生成缓存包后再迁移到内网。
 
 ## 打包链路说明
 
@@ -194,7 +198,7 @@ setup-offline.bat
 resources/backend/backend.exe
 ```
 
-4. 生产环境下 Electron 主进程从 `process.resourcesPath/backend/backend.exe` 启动后端。
+4. 生产环境中 Electron 主进程从 `process.resourcesPath/backend/backend.exe` 启动后端。
 
 ## 工程结构
 
