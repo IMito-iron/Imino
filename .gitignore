@@ -1,0 +1,16 @@
+node_modules/
+out/
+dist/
+release/
+offline-cache/
+.offline-cache-runtime/
+
+backend/.venv/
+backend/__pycache__/
+backend/**/*.pyc
+backend/dist/
+backend/build/
+
+.env
+.DS_Store
+Thumbs.db

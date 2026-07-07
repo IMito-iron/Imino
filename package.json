@@ -1,0 +1,50 @@
+{
+  "name": "imino-local-toolbox",
+  "version": "0.1.0",
+  "description": "Offline Windows desktop toolbox built with Electron, electron-vite, Vue 3 and FastAPI.",
+  "author": "Imino",
+  "main": "./out/main/index.js",
+  "private": true,
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "build:backend": "backend\\.venv\\Scripts\\python -m PyInstaller --clean --noconfirm --distpath backend\\dist --workpath backend\\build backend\\backend.spec",
+    "build:all": "npm run build:backend && npm run build",
+    "preview": "electron-vite preview",
+    "package": "npm run build:all && electron-builder --dir",
+    "dist": "npm run build:all && electron-builder",
+    "backend:dev": "backend\\.venv\\Scripts\\python backend/main.py --host 127.0.0.1 --port 38765"
+  },
+  "dependencies": {
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.0",
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.0",
+    "electron-vite": "^2.3.0"
+  },
+  "build": {
+    "appId": "com.imino.toolbox",
+    "productName": "Imino Local Toolbox",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "out/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "backend/dist/backend.exe",
+        "to": "backend/backend.exe"
+      }
+    ],
+    "win": {
+      "signAndEditExecutable": false,
+      "target": [
+        "nsis"
+      ]
+    }
+  }
+}
